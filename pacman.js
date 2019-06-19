@@ -1,12 +1,45 @@
 // Setup initial game stats
 let score = 0;
 let lives = 2;
+let powerPellets = 4;
 
 
 // Define your ghosts here
 
 // replace this comment with your four ghosts setup as objects
+const inky = {
+  menu_option: '1',
+  name: 'Inky',
+  colour: 'Red',
+  character: 'Shadow',
+  edible: false
+};
 
+const blinky = {
+  menu_option: '2',
+  name: 'Blnky',
+  colour: 'Cyan',
+  character: 'Speedy',
+  edible: false
+};
+
+const pinky = {
+  menu_option: '3',
+  name: 'Pinky',
+  colour: 'Pink',
+  character: 'Bashful',
+  edible: false
+};
+
+const clyde = {
+  menu_option: '4',
+  name: 'Clyde',
+  colour: 'Orange',
+  character: 'Pokey',
+  edible: false
+};
+
+const ghosts = [inky, blinky, pinky, clyde]
 
 // Draw the screen functionality
 function drawScreen() {
@@ -23,15 +56,27 @@ function clearScreen() {
 }
 
 function displayStats() {
-  console.log(`Score: ${score}     Lives: ${lives}`);
+  console.log(`Score: ${score}     Lives: ${lives}\n\nPower-Pellets: ${powerPellets}`);
 }
 
 function displayMenu() {
   console.log('\n\nSelect Option:\n');  // each \n creates a new line
   console.log('(d) Eat Dot');
+  console.log('(p) Eat Power-Pellet');
+  for (i = 0; i < ghosts.length; i++) {
+    console.log (`(${i+1}) Eat ${ghosts[i].name} (${edibility(ghosts[i])})`);
+  }
   console.log('(q) Quit');
 }
 
+function edibility(ghost) {
+  if (ghost.edible === true) {
+    return 'edible'
+  }
+  else if (ghost.edible === false) {
+    return 'inedible'
+  }
+}
 function displayPrompt() {
   // process.stdout.write is similar to console.log except it doesn't add a new line after the text
   process.stdout.write('\nWaka Waka :v '); // :v is the Pac-Man emoji.
@@ -44,6 +89,39 @@ function eatDot() {
   score += 10;
 }
 
+function eatPowerPellet() {
+  if (powerPellets == 0) {
+    console.log('\nNo Power-Pellets left!')
+  }
+  else {
+    score += 50;
+    powerPellets -= 1;
+    for (g=0; g < ghosts.length; g++) {
+      ghosts[g].edible = true;
+  }
+  console.log('\nPower up!');
+  } 
+}
+
+function eatGhost(ghost) {
+  if (ghost.edible === true) {
+    ghost.edible = false;
+    console.log(`\nPac-Man ate ${ghost.character} ghost ${ghost.name}!`);
+    score += 200;
+  } 
+  else if (ghost.edible === false) {
+    console.log(`\n Pac-Man was killed by ${ghost.name}, the ${ghost.colour} ghost!`);
+    lives-- ;
+    gameOver();
+  }
+}
+
+function gameOver() {
+  if (lives < 0) {
+    process.exit();
+  }
+}
+
 
 // Process Player's Input
 function processInput(key) {
@@ -54,6 +132,21 @@ function processInput(key) {
       break;
     case 'd':
       eatDot();
+      break;
+    case 'p':
+      eatPowerPellet();
+      break;
+    case '1':
+      eatGhost(inky);
+      break;
+    case '2':
+      eatGhost(blinky);
+      break;
+    case '3':
+      eatGhost(pinky);
+      break;
+    case '4':
+      eatGhost(clyde);
       break;
     default:
       console.log('\nInvalid Command!');
